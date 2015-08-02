@@ -58,7 +58,6 @@ class IPManager:
 		#return allips
 	def gatherip(self):
 		while True:
-			sleep(10*60)
 			browser = ezBrows('Chrome')
 			browser.get('http://www.gatherproxy.com')
 			# attrs = 'prx', 'type!='Transparent", country, port, tmres, time
@@ -71,6 +70,7 @@ class IPManager:
 			tprint('Added', newips, 'new ips!')
 			for i in newips:
 				self.q.put(i)
+			sleep(10*60)
 
 	def ipthread(self):
 		ipth = Thread(target=self.gatherip, daemon=True)
