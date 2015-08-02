@@ -110,7 +110,7 @@ print('available IPS =',len(ips.available))
 ##        browser.find_element_by_id('proxylisttable_next').click()
 ##        WebDriverWait(browser, 10).until(lambda d: shownEntries() != info)
 
-keywords = lambda: open('keywords.txt').read().split('\n')
+keywords = lambda: open('keywords.txt', encoding='shiftjis').read().split('\n')
 
 #browsers = [webdriver.PhantomJS() for i in range(nprocess)]
 #browseri = 0
@@ -126,7 +126,7 @@ def loadSite(proxy, browser, n={'bi':0}):
 	#site = ''.join(['http://',proxy,'/http://yahoo.co.jp'])
 	threadn = n['bi']
 	while True:
-		tprint('trying', site, 'thread#=', threadn)
+		tprint('trying', site, proxy, 'thread#=', threadn)
 		webdriver.DesiredCapabilities.PHANTOMJS['proxy']={
 		  "httpProxy":proxy,
 		  "ftpProxy":proxy,
@@ -144,9 +144,10 @@ def loadSite(proxy, browser, n={'bi':0}):
 			for keyword in keywords():
 				elem = browser.find_element_by_name('p') # Find the search box
 				elem.send_keys(keyword + Keys.RETURN)
-				WebDriverWait(browser, 10).until(lambda d: d.find_elements_by_id('WS2m'))
+				WebDriverWait(browser, 7).until(lambda d: d.find_elements_by_id('WS2m'))
+				tprint('found WS2M', threadn, proxy)
 		except Exception as e:
-			tprint('Error', n['bi'], e)
+			tprint('Error', threadn, proxy, e)
 		browser.quit()
 		with doneIPlock:
 			global ips
@@ -160,15 +161,8 @@ def nextThread(browser = None):
 
 print('starting processes')
 
-b = webdriver.PhantomJS()
-b.get('http://www.yahoo.co.jp')
-elem = b.find_element_by_name('p') # Find the search box
-elem.send_keys(keywords()[0] + Keys.RETURN)
-WebDriverWait(b, 10).until(lambda d: d.find_elements_by_id('WS2m'))
-print(b.page_source)
-
-# for i in range(nprocess):
-# 	nextThread()
+for i in range(nprocess):
+ 	nextThread()
 
 def closeAll():
 	for p in psutil.process_iter():
