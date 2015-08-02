@@ -167,7 +167,7 @@ print('starting processes')
 for i in range(nprocess):
  	nextThread()
 
-def closeAll():
-	import psutil
-	for p in psutil.process_iter():
-		 if 'phantom' in i.name().lower(): p.kill()
+# def closeAll():
+# 	import psutil
+# 	for p in psutil.process_iter():
+# 		 if 'phantom' in i.name().lower(): p.kill()
