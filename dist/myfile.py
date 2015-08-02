@@ -3,24 +3,88 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.proxy import *
 from selenium.common.exceptions import NoSuchElementException
-
-from urllib import request
-
+from threading import Thread, Lock
 from time import sleep
-from random import *
+from urllib import request
+from random import random
+from queue import Queue
 import json
-
-#browser = webdriver.Chrome()
-#browser.get('http://www.us-proxy.org/')
-#elm = browser.find_element_by_id('proxylisttable')
+import psutil
 
 optionlines = [v for v in open('options.txt').readlines()]
 options = [i.split('=') for i in optionlines]
 opt = {i[0].strip():eval(i[1]) for i in options}
+
+
+site = opt['site']
+nprocess = opt['nprocess']
+delay = opt['delay']
+
+
 print(opt)
 
-def getips():
-    return eval(open('ips.txt').read())
+browsers = []
+
+doneIPlock = Lock()
+consoleLock = Lock()
+webdriver.DesiredCapabilities.CHROME['chrome.switches'] = ['disable-images']
+
+def ezBrows(type='Chrome'):
+	chromeOptions = webdriver.ChromeOptions()
+	prefs = {"profile.managed_default_content_settings.images":2}
+	chromeOptions.add_experimental_option("prefs",prefs)
+	return webdriver.Chrome(chrome_options=chromeOptions)
+
+def tprint(*args):
+	global consoleLock
+	with consoleLock:
+		print(*args)
+
+class IPManager:
+	def __init__(self):
+		self.name = 'ips.txt'
+		self.get = lambda: json.load(open(self.name))
+		self.ips = set(self.get())
+		#self.ips = set()
+		self.doneIP = json.load(open('done.txt'))
+		self.available = self.ips - set(self.doneIP.keys())
+		self.q = Queue()
+		for i in self.available:
+			self.q.put(i)
+
+	#def newips(self, ips):
+		#oldips = self.available
+		#allips = oldips.union(set(ips))
+		#json.dump(list(allips), open(self.name, 'w'))
+		#return allips
+	def gatherip(self):
+		while True:
+			sleep(10*60)
+			browser = ezBrows('Chrome')
+			browser.get('http://www.gatherproxy.com')
+			# attrs = 'prx', 'type!='Transparent", country, port, tmres, time
+			WebDriverWait(browser, 3).until(lambda d: d.find_elements_by_css_selector('.proxy-list'))
+			prxips = [i.get_attribute('prx') for i in browser.find_elements_by_css_selector('.proxy')]
+
+			browser.close()
+			newips = set(prxips)-self.available
+			self.available |= newips
+			tprint('Added', newips, 'new ips!')
+			for i in newips:
+				self.q.put(i)
+
+	def ipthread(self):
+		ipth = Thread(target=self.gatherip, daemon=True)
+		ipth.start()
+	def finishIP(self, ip):
+		self.doneIP[ip] = True
+		json.dump(self.doneIP, open('done.txt','w'))
+
+ips = IPManager()
+ips.ipthread()
+print('available IPS =',len(ips.available))        
+
+#elm = browser.find_element_by_id('proxylisttable')
 ##    ip = []
 ##    info = ''
 ##
@@ -47,44 +111,63 @@ def getips():
 ##
 ##        browser.find_element_by_id('proxylisttable_next').click()
 ##        WebDriverWait(browser, 10).until(lambda d: shownEntries() != info)
-##
-##    with open('ips.txt', 'w') as f:
-##        f.write(repr(ip))
 
-delay = opt['delay']
+keywords = lambda: open('keywords.txt', encoding='shiftjis').read().split('\n')
 
-keywords = open('keywords.txt').read().split('\n')
-doneIP = json.load(open('done.txt'))
-    
-for proxy in getips():
-    if proxy in doneIP:  continue
+#browsers = [webdriver.PhantomJS() for i in range(nprocess)]
+#browseri = 0
 
-    PROXY = proxy
-    
-    webdriver.DesiredCapabilities.CHROME['proxy']={
-        "httpProxy":PROXY,
-        "ftpProxy":PROXY,
-        "sslProxy":PROXY,
-        "noProxy":None,
-        "proxyType":"MANUAL",
-        "autodetect":False
-    }
-    try:
-        browser = webdriver.Chrome()
-        site = 'http://yahoo.co.jp'
-        browser.get(site)
-        
-        for keyword in keywords:
-                elem = browser.find_element_by_name('p') # Find the search box
-                elem.send_keys(keyword + Keys.RETURN)
-                WebDriverWait(browser, 10).until(lambda d: d.find_elements_by_id('results'))
-                
-        browser.quit()
-        sleep(delay*random())
-        
-    except Exception as e:
-        print(e)
-        browser.quit()
-    doneIP[proxy] = True
-    json.dump(doneIP, open('done.txt','w'))
-        
+def nextbrowser():
+	global browseri
+	curb = browseri
+	browseri = (browseri+1) % len(browsers)
+	return browsers[curb]
+
+def loadSite(proxy, browser, n={'bi':0}):
+	n['bi'] += 1
+	#site = ''.join(['http://',proxy,'/http://yahoo.co.jp'])
+	threadn = n['bi']
+	while True:
+		tprint('trying', site, proxy, 'thread#=', threadn)
+		if False:
+			webdriver.DesiredCapabilities.PHANTOMJS['proxy']={
+			  "httpProxy":proxy,
+			  "ftpProxy":proxy,
+			  "sslProxy":proxy,
+			  "noProxy":None,
+			  "proxyType":"MANUAL",
+			  "autodetect":False
+			}
+			webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
+		browser = webdriver.PhantomJS()
+		browsers.append(browser)
+		#sleep(delay*random())
+		try:
+			browser.get(site)
+			for keyword in keywords():
+				elem = browser.find_element_by_name('p') # Find the search box
+				elem.send_keys(keyword + Keys.RETURN)
+				WebDriverWait(browser, 3).until(lambda d: d.find_element_by_id('WS2m'))
+				tprint('found WS2M', threadn, proxy)
+		except Exception as e:
+			tprint('Error', threadn, proxy, e)
+
+		browser.quit()
+		with doneIPlock:
+			global ips
+			ips.finishIP(proxy)
+
+def nextThread(browser = None):
+	proxy = ips.q.get()
+	ips.q.task_done()
+	th = Thread(target=lambda:loadSite(proxy, browser))
+	th.start()
+
+print('starting processes')
+
+for i in range(nprocess):
+ 	nextThread()
+
+def closeAll():
+	for p in psutil.process_iter():
+		 if 'phantom' in i.name().lower(): p.kill()

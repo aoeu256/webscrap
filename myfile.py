@@ -15,8 +15,10 @@ optionlines = [v for v in open('options.txt').readlines()]
 options = [i.split('=') for i in optionlines]
 opt = {i[0].strip():eval(i[1]) for i in options}
 
+
 site = opt['site']
 nprocess = opt['nprocess']
+delay = opt['delay']
 
 
 print(opt)
@@ -57,7 +59,7 @@ class IPManager:
 		#return allips
 	def gatherip(self):
 		while True:
-			sleep(30*60)
+			sleep(10*60)
 			browser = ezBrows('Chrome')
 			browser.get('http://www.gatherproxy.com')
 			# attrs = 'prx', 'type!='Transparent", country, port, tmres, time
@@ -127,15 +129,16 @@ def loadSite(proxy, browser, n={'bi':0}):
 	threadn = n['bi']
 	while True:
 		tprint('trying', site, proxy, 'thread#=', threadn)
-		webdriver.DesiredCapabilities.PHANTOMJS['proxy']={
-		  "httpProxy":proxy,
-		  "ftpProxy":proxy,
-		  "sslProxy":proxy,
-		  "noProxy":None,
-		  "proxyType":"MANUAL",
-		  "autodetect":False
-		}
-		webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
+		if False:
+			webdriver.DesiredCapabilities.PHANTOMJS['proxy']={
+			  "httpProxy":proxy,
+			  "ftpProxy":proxy,
+			  "sslProxy":proxy,
+			  "noProxy":None,
+			  "proxyType":"MANUAL",
+			  "autodetect":False
+			}
+			webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
 		browser = webdriver.PhantomJS()
 		browsers.append(browser)
 		#sleep(delay*random())
@@ -144,10 +147,11 @@ def loadSite(proxy, browser, n={'bi':0}):
 			for keyword in keywords():
 				elem = browser.find_element_by_name('p') # Find the search box
 				elem.send_keys(keyword + Keys.RETURN)
-				WebDriverWait(browser, 7).until(lambda d: d.find_elements_by_id('WS2m'))
+				WebDriverWait(browser, 3).until(lambda d: d.find_element_by_id('WS2m'))
 				tprint('found WS2M', threadn, proxy)
 		except Exception as e:
 			tprint('Error', threadn, proxy, e)
+
 		browser.quit()
 		with doneIPlock:
 			global ips

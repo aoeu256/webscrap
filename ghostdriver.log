@@ -1,5 +1,12 @@
-[INFO  - 2015-08-02T15:25:40.221Z] GhostDriver - Main - running on port 64704
-[INFO  - 2015-08-02T15:25:38.975Z] Session [bac6ab60-392a-11e5-8ceb-3b96bc65c5c9] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1","webSecurityEnabled":true}
-[INFO  - 2015-08-02T15:25:38.975Z] Session [bac6ab60-392a-11e5-8ceb-3b96bc65c5c9] - page.customHeaders:  - {}
-[INFO  - 2015-08-02T15:25:38.975Z] Session [bac6ab60-392a-11e5-8ceb-3b96bc65c5c9] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.0.0","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"windows-7-32bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"ftpProxy":"124.202.182.22:8118","noProxy":null,"sslProxy":"124.202.182.22:8118","proxyType":"MANUAL","autodetect":false,"httpProxy":"124.202.182.22:8118"},"phantomjs.page.settings.userAgent":"Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"}
-[INFO  - 2015-08-02T15:25:38.975Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: bac6ab60-392a-11e5-8ceb-3b96bc65c5c9
+[INFO  - 2015-08-02T16:14:28.895Z] GhostDriver - Main - running on port 57529
+[INFO  - 2015-08-02T16:14:28.992Z] Session [8d341690-3931-11e5-8457-3d37ae4fa729] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.0.0 Safari/538.1","webSecurityEnabled":true}
+[INFO  - 2015-08-02T16:14:28.992Z] Session [8d341690-3931-11e5-8457-3d37ae4fa729] - page.customHeaders:  - {}
+[INFO  - 2015-08-02T16:14:28.992Z] Session [8d341690-3931-11e5-8457-3d37ae4fa729] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.0.0","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"windows-7-32bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
+[INFO  - 2015-08-02T16:14:28.992Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: 8d341690-3931-11e5-8457-3d37ae4fa729
+[ERROR - 2015-08-02T16:14:28.749Z] Session [857890c0-3931-11e5-b045-59b0071dc97b] - page.onError - msg: TypeError: undefined is not an object (evaluating 'xLBua.split("Version/")[1].split')
+
+  :262 in error
+[ERROR - 2015-08-02T16:14:28.750Z] Session [857890c0-3931-11e5-b045-59b0071dc97b] - page.onError - stack:
+  (anonymous function) (http://search.yahoo.co.jp/combo?120221/smartphone_jquery.js&140527/connect.js&140612/newassist.js&131119/env-min.js&140919/carousel.js:6)
+
+  :262 in error

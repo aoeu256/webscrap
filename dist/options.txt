@@ -1,1 +1,3 @@
 delay = 1
+nprocess = 20
+site = 'http://yahoo.co.jp'
