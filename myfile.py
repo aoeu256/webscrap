@@ -9,7 +9,6 @@ from urllib import request
 from random import random
 from queue import Queue
 import json
-import psutil
 
 optionlines = [v for v in open('options.txt').readlines()]
 options = [i.split('=') for i in optionlines]
@@ -169,5 +168,6 @@ for i in range(nprocess):
  	nextThread()
 
 def closeAll():
+	import psutil
 	for p in psutil.process_iter():
 		 if 'phantom' in i.name().lower(): p.kill()
