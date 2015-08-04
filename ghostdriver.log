@@ -1,5 +1,33 @@
-[INFO  - 2015-08-02T18:02:22.769Z] GhostDriver - Main - running on port 63348
-[INFO  - 2015-08-02T18:02:23.308Z] Session [a0324f50-3940-11e5-9235-73e09c31912f] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.0.0 Safari/538.1","webSecurityEnabled":true}
-[INFO  - 2015-08-02T18:02:23.309Z] Session [a0324f50-3940-11e5-9235-73e09c31912f] - page.customHeaders:  - {}
-[INFO  - 2015-08-02T18:02:23.309Z] Session [a0324f50-3940-11e5-9235-73e09c31912f] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.0.0","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"windows-7-32bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"proxyType":"direct"}}
-[INFO  - 2015-08-02T18:02:23.309Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: a0324f50-3940-11e5-9235-73e09c31912f
+[INFO  - 2015-08-04T13:16:07.341Z] GhostDriver - Main - running on port 50887
+[INFO  - 2015-08-04T13:16:08.111Z] Session [f7cdd020-3aaa-11e5-8456-636655970e56] - page.settings - {"XSSAuditingEnabled":false,"javascriptCanCloseWindows":true,"javascriptCanOpenWindows":true,"javascriptEnabled":true,"loadImages":true,"localToRemoteUrlAccessEnabled":false,"userAgent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/538.1 (KHTML, like Gecko) PhantomJS/2.0.0 Safari/538.1","webSecurityEnabled":true}
+[INFO  - 2015-08-04T13:16:08.111Z] Session [f7cdd020-3aaa-11e5-8456-636655970e56] - page.customHeaders:  - {}
+[INFO  - 2015-08-04T13:16:08.111Z] Session [f7cdd020-3aaa-11e5-8456-636655970e56] - Session.negotiatedCapabilities - {"browserName":"phantomjs","version":"2.0.0","driverName":"ghostdriver","driverVersion":"1.2.0","platform":"windows-7-32bit","javascriptEnabled":true,"takesScreenshot":true,"handlesAlerts":false,"databaseEnabled":false,"locationContextEnabled":false,"applicationCacheEnabled":false,"browserConnectionEnabled":false,"cssSelectorsEnabled":true,"webStorageEnabled":false,"rotatable":false,"acceptSslCerts":false,"nativeEvents":true,"proxy":{"httpProxy":"120.50.54.81:8080","sslProxy":"120.50.54.81:8080","proxyType":"MANUAL","noProxy":null,"ftpProxy":"120.50.54.81:8080","autodetect":false}}
+[INFO  - 2015-08-04T13:16:08.111Z] SessionManagerReqHand - _postNewSessionCommand - New Session Created: f7cdd020-3aaa-11e5-8456-636655970e56
+[ER[ERROR - 2015-08-04T13:17:23.520Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694243489
+
+  :262 in error
+[ERROR - 2015-08-04T13:17:24.720Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694244674
+
+  :262 in error
+[ERROR - 2015-08-04T13:17:25.818Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694245771
+
+  :262 in error
+[ERROR - 2015-08-04T13:17:26.941Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694246892
+
+  :262 in error
+[ERROR - 2015-08-04T13:17:28.041Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694247993
+
+  :262 in error
+ROR - 2015-08-04T13:16:33.577Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694193522
+
+  :262 in error
+[ERROR - 2015-08-04T13:16:34.389Z] WebElementLocator - _handleLocateCommand - Element(s) NOT Found: GAVE UP. Search Stop Time: 1438694194329
+
+  :262 in error
+1.044Z] Session [b9a8d8d0-3aaa-11e5-802d-95be8c3ebead] - page.onError - msg: TypeError: undefined is not a constructor (evaluating 'YAHOO.Fp.storageCheck()')
+
+  :262 in error
+[ERROR - 2015-08-04T13:16:31.045Z] Session [b9a8d8d0-3aaa-11e5-802d-95be8c3ebead] - page.onError - stack:
+  global code (http://www.yahoo.co.jp/:904)
+
+  :262 in error

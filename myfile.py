@@ -1,3 +1,4 @@
+from contextlib import suppress
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,16 +10,13 @@ from urllib import request
 from random import random
 from queue import Queue
 import json
+import re
 
 optionlines = [v for v in open('options.txt').readlines()]
 options = [i.split('=') for i in optionlines]
 opt = {i[0].strip():eval(i[1]) for i in options}
 
-
-site = opt['site']
-nprocess = opt['nprocess']
-delay = opt['delay']
-
+site, nprocess, delay = opt['site'], opt['nprocess'], opt['delay']
 
 print(opt)
 
@@ -48,6 +46,7 @@ class IPManager:
 		self.doneIP = json.load(open('done.txt'))
 		self.available = self.ips - set(self.doneIP.keys())
 		self.q = Queue()
+		self.proxysites = open('proxy_sites.txt').read().split('\n')
 		for i in self.available:
 			self.q.put(i)
 
@@ -56,24 +55,55 @@ class IPManager:
 		#allips = oldips.union(set(ips))
 		#json.dump(list(allips), open(self.name, 'w'))
 		#return allips
-	def gatherip(self):
-		while True:
-			browser = ezBrows('Chrome')
-			browser.get('http://www.gatherproxy.com')
-			# attrs = 'prx', 'type!='Transparent", country, port, tmres, time
-			WebDriverWait(browser, 3).until(lambda d: d.find_elements_by_css_selector('.proxy-list'))
-			prxips = [i.get_attribute('prx') for i in browser.find_elements_by_css_selector('.proxy')]
 
-			browser.close()
+	def gatherFrom(self, name, brow=None):
+		d = brow or webdriver.PhantomJS()
+
+		d.get(name)
+		#if name == 'http://www.proxynova.com/proxy-server-list/elite-proxies/':
+		#	#attrs = 'prx', 'type!='Transparent", country, port, tmres, time
+		#	with suppress(AttributeError): d.close()
+		#	return [i.get_attribute('prx') for i in browser.find_elements_by_css_selector('.proxy')]
+
+		txt = d.page_source
+		allips = [ips for (ips, _) in re.findall(r'(([0-9]{1,3}\.){3}[0-9]{1,3}\:[0-9]+)', txt)]
+		if allips:
+			with suppress(AttributeError): d.close()
+			return allips
+
+		for i in d.find_elements_by_css_selector('tr'):
+			try:
+				ip = re.search(r'([0-9]{1,3}\.){3}[0-9]{1,3}', i.text)
+				port = re.search(r'\s([0-9]{2,5})\s', i.text)
+				allips.append(ip.group()+':'+port.groups()[0])
+			except Exception as e:
+				pass
+
+		with suppress(AttributeError): d.close()
+		return allips
+
+	def gatherip(self):
+		proxyi = 0
+		while True:
+			# browser = ezBrows('Chrome')
+			# browser.get('http://www.gatherproxy.com')
+			# # attrs = 'prx', 'type!='Transparent", country, port, tmres, time
+			# WebDriverWait(browser, 3).until(lambda d: d.find_elements_by_css_selector('.proxy-list'))
+			# prxips = [i.get_attribute('prx') for i in browser.find_elements_by_css_selector('.proxy')]
+			#
+			# browser.close()
+			prxname = self.proxysites[proxyi]
+			prxips = self.gatherFrom(prxname)
+			proxyi = (proxyi + 1) % len(self.proxysites)
 			newips = set(prxips)-self.available
 			self.available |= newips
-			tprint('Added', newips, 'new ips!')
+			tprint('Added', newips, 'new proxies from', prxname)
 			for i in newips:
 				self.q.put(i)
-			sleep(10*60)
+			sleep(30)
 
 	def ipthread(self):
-		ipth = Thread(target=self.gatherip, daemon=True)
+		ipth = Thread(target=self.gatherip)
 		ipth.start()
 	def finishIP(self, ip):
 		self.doneIP[ip] = True
@@ -122,13 +152,12 @@ def nextbrowser():
 	browseri = (browseri+1) % len(browsers)
 	return browsers[curb]
 
-def loadSite(proxy, browser, n={'bi':0}):
-	n['bi'] += 1
+def loadSite(n, browser=None):
 	#site = ''.join(['http://',proxy,'/http://yahoo.co.jp'])
-	threadn = n['bi']
 	while True:
-		tprint('trying', site, proxy, 'thread#=', threadn)
-		if False:
+		proxy = ips.q.get()
+		tprint('trying', site, proxy, 'thread#=', n)
+		if True:
 			webdriver.DesiredCapabilities.PHANTOMJS['proxy']={
 			  "httpProxy":proxy,
 			  "ftpProxy":proxy,
@@ -137,35 +166,34 @@ def loadSite(proxy, browser, n={'bi':0}):
 			  "proxyType":"MANUAL",
 			  "autodetect":False
 			}
-			webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
-		browser = webdriver.PhantomJS()
-		browsers.append(browser)
-		#sleep(delay*random())
+			#webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Linux; U; Android 2.3.3; en-us; LG-LU3000 Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1';
+		browser = None
 		try:
+			browser = webdriver.PhantomJS()
+			sleep(delay*random())
 			browser.get(site)
 			for keyword in keywords():
+				WebDriverWait(browser, 5).until(lambda d: d.find_element_by_name('p'))
 				elem = browser.find_element_by_name('p') # Find the search box
 				elem.send_keys(keyword + Keys.RETURN)
-				WebDriverWait(browser, 3).until(lambda d: d.find_element_by_id('WS2m'))
-				tprint('found WS2M', threadn, proxy)
+				WebDriverWait(browser, 5).until(lambda d: d.find_element_by_id('WS2m'))
+				tprint('Thread#',n,proxy,'sucessfully executed search')
 		except Exception as e:
-			tprint('Error', threadn, proxy, e)
+			tprint('Thread#', n, proxy, 'is skipped.', e)
 
-		browser.quit()
+		if browser is not None:
+			with suppress(AttributeError):
+				browser.quit()
+
 		with doneIPlock:
 			global ips
 			ips.finishIP(proxy)
 
-def nextThread(browser = None):
-	proxy = ips.q.get()
-	ips.q.task_done()
-	th = Thread(target=lambda:loadSite(proxy, browser))
-	th.start()
-
 print('starting processes')
 
 for i in range(nprocess):
- 	nextThread()
+	th = Thread(target=lambda:loadSite(i))
+	th.start()
 
 # def closeAll():
 # 	import psutil
